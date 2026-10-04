@@ -1,0 +1,1 @@
+{ "name": "buscador-autos", "private": true, "type": "module", "engines": { "node": ">=18" } }

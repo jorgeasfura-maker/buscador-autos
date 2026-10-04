@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buscador de Autos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--asfalto:#24272b;--asfalto2:#33373d;--placa:#f6f5ef;--fondo:#ecebe5;--senal:#f3c33b;--verde:#2f8f5b;--rojo:#c8452f;--acero:#7d838b;--tinta:#1d1f22;
+--cond:"Barlow Condensed","Arial Narrow",sans-serif;--txt:"Barlow",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--txt);background:var(--fondo);color:var(--tinta);font-size:16px;line-height:1.45}
+header{background:var(--asfalto);color:var(--placa);padding:26px 20px 34px;
+background-image:repeating-linear-gradient(90deg,transparent 0 46px,rgba(243,195,59,.9) 46px 86px,transparent 86px 132px);background-size:132px 6px;background-repeat:repeat-x;background-position:0 100%}
+.wrap{max-width:1080px;margin:0 auto}
+h1{font-family:var(--cond);font-weight:600;font-size:22px;margin:0 0 16px;color:#c9ccd1}
+.placa{display:flex;background:var(--placa);border:3px solid var(--tinta);border-radius:10px;box-shadow:0 0 0 3px var(--placa),0 8px 22px rgba(0,0,0,.35);overflow:hidden}
+.placa:focus-within{box-shadow:0 0 0 3px var(--senal),0 8px 22px rgba(0,0,0,.35)}
+.pais{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--cond);font-weight:700;font-size:13px;padding:8px 6px;background:var(--tinta);color:var(--placa);letter-spacing:.3em;text-align:center}
+.placa input{flex:1;border:0;background:transparent;font-family:var(--cond);font-weight:700;font-size:clamp(26px,5vw,44px);padding:10px 16px;color:var(--tinta);min-width:0;text-transform:uppercase}
+.placa input::placeholder{color:#b9b8b0;text-transform:none;font-weight:600}
+.placa input:focus{outline:none}
+.filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:18px}
+.filtros label{display:flex;flex-direction:column;font-size:13px;color:#b8bcc2;gap:4px}
+.filtros input,.filtros select{font:inherit;font-size:15px;padding:8px 10px;border-radius:6px;border:1px solid #4a4f56;background:var(--asfalto2);color:var(--placa)}
+:focus-visible{outline:3px solid var(--senal);outline-offset:2px}
+main{padding:26px 20px 60px}
+.paso{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:16px;border:1px solid #dcdad2}
+.paso h2{font-family:var(--cond);font-weight:600;font-size:24px;margin:0 0 6px;display:flex;gap:10px;align-items:center}
+.paso h2 span{background:var(--tinta);color:var(--senal);width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;font-size:18px}
+.paso p{margin:4px 0 12px;color:#4d5258;max-width:70ch}
+.botones{display:flex;flex-wrap:wrap;gap:10px}
+.b{font:inherit;font-weight:600;font-size:15px;padding:10px 16px;border-radius:7px;border:2px solid var(--tinta);background:#fff;color:var(--tinta);cursor:pointer;text-decoration:none}
+.b.pri{background:var(--senal)} .b:hover{background:#f7f3e2} .b.pri:hover{background:#f6cd55}
+.b[aria-disabled=true]{opacity:.45;pointer-events:none}
+.chip.error{border-color:var(--rojo);color:var(--rojo)} .b:disabled{opacity:.6;cursor:progress}
+.contadores{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{font-size:14px;padding:6px 12px;border-radius:999px;background:#f3f2ec;border:1px solid #d5d3cb}
+.chip.ok{border-color:var(--verde);background:#eef7f1}
+#aviso{margin-top:10px;font-size:14px;color:var(--rojo);min-height:1em}
+.barra{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0 12px}
+.barra h2{font-family:var(--cond);font-size:28px;font-weight:600;margin:0}
+.barra select,.barra button{font:inherit;font-size:14px;padding:7px 10px;border-radius:6px;border:1px solid #c9c7bf;background:#fff;cursor:pointer}
+.lista{display:flex;flex-direction:column;gap:2px;background:#d8d6ce;border-radius:8px;overflow:hidden}
+.fila{display:grid;grid-template-columns:44px 120px 1fr auto;gap:16px;align-items:center;background:#fff;padding:12px 16px}
+.fila.top{background:#fffbea}
+.pos{font-family:var(--cond);font-weight:700;font-size:26px;color:var(--acero);text-align:center}
+.fila.top .pos{color:var(--tinta)}
+.foto{width:120px;height:80px;border-radius:6px;background:#e4e2da center/cover no-repeat}
+.info h3{margin:0 0 4px;font-size:17px;font-weight:600;line-height:1.25}
+.info h3 a{color:var(--tinta);text-decoration:none}.info h3 a:hover{text-decoration:underline}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:#575c63}
+.sitio{font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--asfalto);color:var(--placa)}
+.precio{text-align:right;min-width:150px}
+.monto{font-family:var(--cond);font-weight:700;font-size:28px;line-height:1}
+.ahorro{font-size:13px;margin-top:4px;font-weight:600}.ahorro.bueno{color:var(--verde)}.ahorro.caro{color:var(--rojo)}
+.medidor{height:6px;background:#e7e5de;border-radius:3px;margin-top:8px;overflow:hidden}.medidor i{display:block;height:100%;background:var(--senal)}
+.puntos{font-size:12px;color:var(--acero);margin-top:3px}
+.vacio{background:#fff;border-radius:8px;padding:30px 24px;text-align:center;color:#575c63}
+#tmp{position:fixed;left:-20000px;top:0;width:1200px;opacity:0;pointer-events:none}
+@media(max-width:640px){.fila{grid-template-columns:32px 1fr;grid-template-areas:"pos info" "pos precio"}.foto{display:none}.pos{grid-area:pos}.info{grid-area:info}.precio{grid-area:precio;text-align:left}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Buscador de autos usados · Chileautos, MercadoLibre y Yapo</h1>
+  <div class="placa"><div class="pais">CHILE</div>
+    <input id="q" autofocus placeholder="Ej: Toyota Yaris 2018" aria-label="Vehículo que buscas"></div>
+  <div class="filtros">
+    <label>Año desde<input id="anio_min" type="number" min="1980" max="2030"></label>
+    <label>Año hasta<input id="anio_max" type="number" min="1980" max="2030"></label>
+    <label>Precio mínimo<input id="precio_min" inputmode="numeric" placeholder="$"></label>
+    <label>Precio máximo<input id="precio_max" inputmode="numeric" placeholder="$ 10.000.000"></label>
+    <label>Kilómetros máx.<input id="km_max" inputmode="numeric" placeholder="120.000"></label>
+    <label>Qué priorizar<select id="prioridad">
+      <option value="equilibrado">Equilibrio general</option><option value="precio">Precio más bajo</option>
+      <option value="nuevo">Más nuevo y menos km</option><option value="oferta">Bajo su precio esperado</option></select></label>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <section class="paso">
+    <div class="botones" style="align-items:center">
+      <button class="b pri" id="buscar" type="button" style="font-size:18px;padding:12px 26px">Buscar en los 3 sitios</button>
+      <label style="display:flex;gap:8px;align-items:center;font-size:15px">Revisar hasta <input type="number" id="maxpag" value="20" min="1" max="60" style="width:70px;font:inherit;padding:6px 8px;border-radius:6px;border:1px solid #c9c7bf"> páginas por sitio</label>
+      <button class="b" id="detener" type="button" hidden>Detener</button>
+    </div>
+    <div class="contadores" id="cont"></div>
+    <div id="aviso" role="status"></div>
+    <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:15px">
+      <label for="propio">Tu servidor propio:</label>
+      <input id="propio" placeholder="https://buscador-autos.TU-NOMBRE.workers.dev" style="flex:1;min-width:260px;font:inherit;padding:8px 10px;border-radius:6px;border:1px solid #c9c7bf">
+    </div>
+    <details style="margin-top:12px;font-size:14px;color:#4d5258"><summary>Opciones avanzadas</summary>
+      <p>La app consulta los sitios a través de servidores intermedios públicos (el navegador no permite leer otros sitios directamente). Se prueban en orden; puedes cambiar la lista, uno por línea. La dirección del sitio se agrega al final. Escribe <b>directo</b> para consultar sin intermediario (solo funciona con una extensión que habilite CORS).</p>
+      <textarea id="proxies" rows="4" style="width:100%;font:13px monospace;padding:8px;border-radius:6px;border:1px solid #c9c7bf"></textarea>
+    </details>
+  </section>
+  <section id="salida"></section>
+</main>
+<div id="tmp" aria-hidden="true"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const ANIO = new Date().getFullYear();
+const NOMBRE = {chileautos:"Chileautos", mercadolibre:"MercadoLibre", yapo:"Yapo", otro:"Otro sitio"};
+const ENLACE = {chileautos:/chileautos\.cl\/vehiculos\/detalles\//i, mercadolibre:/mercadolibre\.cl\/.*MLC-?\d+/i, yapo:/yapo\.cl\/(?!searchresult).+\d{6,}/i};
+const num = v => { const d = String(v ?? "").replace(/\D/g, ""); return d ? parseInt(d, 10) : null; };
+const clp = n => n == null ? "—" : "$ " + n.toLocaleString("es-CL");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9 ]+/g," ").trim();
+let avisos = [];   // todos los avisos pegados
+
+for (const id of ["precio_min","precio_max","km_max"])
+  $("#"+id).addEventListener("input", e => { const n = num(e.target.value); e.target.value = n ? n.toLocaleString("es-CL") : ""; });
+for (const id of ["anio_min","anio_max","precio_min","precio_max","km_max","prioridad"])
+  $("#"+id).addEventListener("change", pintar);
+$("#q").addEventListener("keydown", e => { if (e.key === "Enter") buscar(); });
+
+const PROXIES = ["https://corsproxy.io/?url=", "https://api.allorigins.win/raw?url=", "https://api.codetabs.com/v1/proxy?quest=", "https://thingproxy.freeboard.io/fetch/"];
+$("#proxies").value = PROXIES.join("\n");
+try { $("#propio").value = localStorage.getItem("servidorPropio") || ""; } catch {}
+$("#propio").addEventListener("change", e => { try { localStorage.setItem("servidorPropio", e.target.value.trim()); } catch {} });
+const BLOQUEO = /captcha|just a moment|access denied|verifica que eres|are you a human|unusual traffic|pardon our interruption|cf-chl/i;
+
+function paginaURL(sitio, q, n){
+  const slug = norm(q).split(/\s+/).filter(Boolean).join("-"), kw = encodeURIComponent(q);
+  if (sitio === "mercadolibre") return n === 1 ? `https://autos.mercadolibre.cl/${slug}` : `https://autos.mercadolibre.cl/${slug}_Desde_${(n-1)*48+1}_NoIndex_True`;
+  if (sitio === "yapo") return `https://www.yapo.cl/searchresult/autos-usados?keyword=${kw}` + (n > 1 ? `&page=${n}` : "");
+  return `https://www.chileautos.cl/vehiculos/?q=(And.Servicio.chileautos._.Keywords.${kw}.)` + (n > 1 ? `&offset=${(n-1)*12}` : "");
+}
+// busca el enlace "siguiente" en la página, si existe
+function siguiente(html, base){
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  let a = doc.querySelector('link[rel="next"], a[rel="next"], a[aria-label*="iguiente"], a[title*="iguiente"], li.andes-pagination__button--next a, a[class*="next" i]');
+  if (!a) a = [...doc.querySelectorAll("a[href]")].find(x => /^\s*(siguiente|sig\.?|›|»|>)\s*$/i.test(x.textContent));
+  const href = a && a.getAttribute("href");
+  return href ? absoluta(href, base) : null;
+}
+
+async function traer(url){
+  const propio = $("#propio").value.trim().replace(/\/+$/, "");
+  const enVercel = location.protocol.startsWith("http") ? [location.origin + "/api/buscar?url="] : [];
+  const lista = [...enVercel, ...(propio ? [propio + "/?url="] : []), ...$("#proxies").value.split("\n").map(s => s.trim()).filter(Boolean)];
+  let ultimo = "sin respuesta";
+  for (const px of lista) {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 20000);
+    try {
+      const r = await fetch(px.toLowerCase() === "directo" ? url : px + encodeURIComponent(url), {signal: ctl.signal});
+      const txt = await r.text();
+      if (BLOQUEO.test(txt.slice(0, 20000)) && txt.length < 60000) { ultimo = "bloqueado"; continue; }
+      if (r.ok && txt.length > 2000) return txt;
+      ultimo = "respuesta " + r.status;
+    } catch (e) { ultimo = e.name === "AbortError" ? "tiempo agotado" : "sin conexión"; }
+    finally { clearTimeout(t); }
+  }
+  throw new Error(ultimo);
+}
+
+const estado = {};
+function contadores(){
+  $("#cont").innerHTML = ["chileautos","mercadolibre","yapo"].map(k => {
+    const e = estado[k]; if (!e) return `<span class="chip">${NOMBRE[k]}</span>`;
+    const cls = e.n ? "ok" : (e.fase === "buscando" ? "" : "error");
+    const txt = e.fase === "buscando" ? `página ${e.pag || 1} · ${e.n} avisos` : e.n ? `${e.n} avisos` : (e.error || "sin resultados");
+    return `<span class="chip ${cls}">${NOMBRE[k]}: ${txt}</span>`;
+  }).join("");
+}
+
+let buscando = false, detener = false;
+$("#detener").addEventListener("click", () => { detener = true; $("#detener").textContent = "Deteniendo…"; });
+async function buscar(){
+  const q = $("#q").value.trim();
+  if (!q) { $("#q").focus(); $("#aviso").textContent = "Escribe qué vehículo buscas."; return; }
+  if (buscando) return; buscando = true;
+  $("#buscar").disabled = true; $("#buscar").textContent = "Buscando…"; $("#aviso").textContent = "";
+  avisos = []; pintar();
+  const sitios = ["chileautos","mercadolibre","yapo"];
+  const maxpag = Math.min(60, Math.max(1, num($("#maxpag").value) || 20));
+  detener = false; $("#detener").hidden = false;
+  for (const k of sitios) estado[k] = {fase: "buscando", n: 0, pag: 0};
+  contadores();
+  await Promise.all(sitios.map(async sitio => {
+    let error = "", url = paginaURL(sitio, q, 1), visitadas = new Set();
+    for (let n = 1; n <= maxpag && url && !detener; n++) {
+      if (visitadas.has(url)) break;
+      visitadas.add(url); estado[sitio].pag = n; contadores();
+      let html;
+      try { html = await traer(url); }
+      catch (e) { if (!estado[sitio].n) error = e.message; break; }
+      const nuevos = extraer(html, sitio, url);
+      let agregados = 0;
+      for (const it of nuevos) if (!avisos.some(x => x.url === it.url)) { avisos.push(it); agregados++; }
+      estado[sitio].n += agregados; contadores(); pintar();
+      if (!agregados) { if (!estado[sitio].n) error = "la página no trajo avisos"; break; } // se acabaron los resultados
+      url = siguiente(html, url) || paginaURL(sitio, q, n + 1);
+    }
+    estado[sitio].fase = "listo"; estado[sitio].error = error; contadores();
+  }));
+  $("#detener").hidden = true;
+  const fallidos = Object.keys(estado).filter(k => !estado[k].n).map(k => NOMBRE[k]);
+  if (fallidos.length) $("#aviso").textContent = `${fallidos.join(" y ")} no entregó avisos (el sitio puede bloquear consultas automáticas o el servidor intermedio no respondió). Intenta de nuevo en un rato.`;
+  if (!avisos.length) $("#salida").innerHTML = `<div class="vacio"><strong>No se obtuvieron avisos.</strong><br>Revisa tu conexión e inténtalo de nuevo. Si se repite, abre "Opciones avanzadas".</div>`;
+  $("#buscar").disabled = false; $("#buscar").textContent = "Buscar en los 3 sitios"; $("#detener").textContent = "Detener"; buscando = false;
+}
+$("#buscar").addEventListener("click", buscar);
+
+function absoluta(href, base){ try { return new URL(href, base).href; } catch { return ""; } }
+
+function extraer(html, sitio, base){
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const out = [], vistos = new Set();
+  // 1) datos estructurados JSON-LD
+  for (const s of doc.querySelectorAll('script[type="application/ld+json"]')) {
+    let j; try { j = JSON.parse(s.textContent); } catch { continue; }
+    const pila = [j];
+    while (pila.length) {
+      const o = pila.pop(); if (!o || typeof o !== "object") continue;
+      if (Array.isArray(o)) { pila.push(...o); continue; }
+      const off = Array.isArray(o.offers) ? o.offers[0] : o.offers;
+      const precio = off && num(off.price);
+      if (o.name && precio >= 500000) {
+        const url = absoluta(o.url || off.url || "", base);
+        if (!vistos.has(url || o.name)) {
+          vistos.add(url || o.name);
+          const km = o.mileageFromOdometer && num(o.mileageFromOdometer.value ?? o.mileageFromOdometer);
+          const anio = num(o.vehicleModelDate || o.modelDate || o.productionDate);
+          const img = Array.isArray(o.image) ? o.image[0] : (o.image && o.image.url) || o.image || "";
+          const p = parsear({href: url, titulo: String(o.name), text: `${o.name}\n$ ${precio.toLocaleString("es-CL")}\n${km != null ? km.toLocaleString("es-CL") + " km" : ""}`, img: typeof img === "string" ? img : ""}, sitio);
+          if (anio && anio > 1979 && anio <= ANIO + 1) p.anio = anio;
+          out.push(p);
+        }
+      }
+      for (const v of Object.values(o)) if (v && typeof v === "object") pila.push(v);
+    }
+  }
+  // 2) tarjetas en el HTML
+  doc.querySelectorAll("script,style,iframe,object,embed,link,meta,noscript,svg").forEach(n => n.remove());
+  doc.querySelectorAll("img").forEach(i => { const s = i.getAttribute("data-src") || i.getAttribute("src") || ""; i.setAttribute("data-real", absoluta(s, base)); i.removeAttribute("src"); i.removeAttribute("srcset"); });
+  doc.querySelectorAll("*").forEach(n => { for (const at of [...n.attributes]) if (/^on/i.test(at.name)) n.removeAttribute(at.name); });
+  const tmp = $("#tmp"); tmp.innerHTML = doc.body ? doc.body.innerHTML : "";
+  const precioRx = /\$\s?\d{1,3}(\.\d{3}){1,3}/;
+  for (const a of tmp.querySelectorAll("a[href]")) {
+    const href = absoluta(a.getAttribute("href"), base).split("#")[0].split("?")[0];
+    if (!ENLACE[sitio].test(href) || vistos.has(href)) continue;
+    let el = a, card = null;
+    for (let i = 0; i < 9 && el && el !== tmp; i++) { if (precioRx.test(el.innerText || "")) { card = el; break; } el = el.parentElement; }
+    if (!card) continue;
+    const text = (card.innerText || "").trim();
+    if (text.length > 1800) continue;
+    const h = card.querySelector('h2,h3,h4,[class*="title"],[class*="Title"]');
+    const titulo = (h && h.innerText.trim()) || a.getAttribute("title") || a.innerText.trim() || text.split("\n")[0];
+    const img = card.querySelector("img");
+    vistos.add(href);
+    out.push(parsear({href, titulo, text, img: img ? img.getAttribute("data-real") || "" : ""}, sitio));
+  }
+  tmp.innerHTML = "";
+  return out.filter(o => o.precio);
+}
+
+function parsear(it, sitio){
+  const {text, titulo} = it;
+  const precios = [...text.matchAll(/\$\s?(\d{1,3}(?:\.\d{3}){1,3})/g)].map(m => num(m[1])).filter(p => p >= 500000);
+  let anio = null;
+  for (const f of [titulo, text]) { const m = (f.match(/\b(19[89]\d|20[0-4]\d)\b/g)||[]).map(Number).find(y => y <= ANIO+1); if (m) { anio = m; break; } }
+  const mk = text.match(/(\d{1,3}(?:\.\d{3})+|\d{1,6})\s?km\b(?!\s*\/)/i);
+  const lugar = text.split("\n").map(s=>s.trim()).find(l => l.length < 60 && /regi[oó]n|santiago|chill[aá]n|concepci[oó]n|valpara[ií]so|temuco|talca|rancagua|antofagasta|la serena|puerto montt|vi[ñn]a|los [aá]ngeles|osorno|valdivia|arica|iquique|curic[oó]|[ñn]uble|biob[ií]o|maule/i.test(l)) || "";
+  return {sitio, titulo: titulo.slice(0,160), url: it.href, img: it.img, precio: precios.length ? Math.min(...precios) : null, anio, km: mk ? num(mk[1]) : null, lugar};
+}
+
+/* ---------- ranking ---------- */
+function resolver(A, b){
+  const n = b.length, M = A.map((r,i) => [...r, b[i]]);
+  for (let c = 0; c < n; c++) {
+    let p = c; for (let r = c+1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+    if (Math.abs(M[p][c]) < 1e-9) return null;
+    [M[c], M[p]] = [M[p], M[c]];
+    for (let r = 0; r < n; r++) if (r !== c) { const f = M[r][c]/M[c][c]; M[r] = M[r].map((x,j) => x - f*M[c][j]); }
+  }
+  return M.map((r,i) => r[n]/r[i]);
+}
+
+function rankear(){
+  const f = {q:$("#q").value, prioridad:$("#prioridad").value, anio_min:num($("#anio_min").value), anio_max:num($("#anio_max").value),
+    precio_min:num($("#precio_min").value), precio_max:num($("#precio_max").value), km_max:num($("#km_max").value)};
+  const tokens = norm(f.q).split(" ").filter(t => t.length > 1 && !/^\d+$/.test(t));
+  const L = avisos.map(a => ({...a})).filter(i => {
+    const tn = norm(i.titulo);
+    if (tokens.length && tokens.filter(t => tn.includes(t)).length / tokens.length < .5) return false;
+    if (f.anio_min && (i.anio||0) < f.anio_min) return false;
+    if (f.anio_max && i.anio && i.anio > f.anio_max) return false;
+    if (f.precio_max && i.precio > f.precio_max) return false;
+    if (f.precio_min && i.precio < f.precio_min) return false;
+    if (f.km_max && i.km != null && i.km > f.km_max) return false;
+    return true;
+  });
+  if (!L.length) return L;
+  const comp = L.filter(i => i.anio && i.km != null);
+  let coef = null;
+  if (comp.length >= 6) {
+    const X = comp.map(i => [1, i.anio-2000, i.km/10000]), y = comp.map(i => i.precio);
+    const XtX = [0,1,2].map(a => [0,1,2].map(b => X.reduce((s,r) => s + r[a]*r[b], 0)));
+    const Xty = [0,1,2].map(a => X.reduce((s,r,k) => s + r[a]*y[k], 0));
+    coef = resolver(XtX, Xty);
+  }
+  L.forEach(i => { i.esperado = null; i.ahorro_pct = null;
+    if (coef && i.anio && i.km != null) { const e = coef[0] + coef[1]*(i.anio-2000) + coef[2]*i.km/10000;
+      if (e > 0) { i.esperado = Math.round(e); i.ahorro_pct = Math.round((e - i.precio)/e*1000)/10; } } });
+  const escala = (vals, inv) => { const v = vals.filter(x => x != null); if (!v.length) return () => .5;
+    const lo = Math.min(...v), hi = Math.max(...v);
+    return x => { if (x == null || hi === lo) return .5; const s = (x-lo)/(hi-lo); return inv ? 1-s : s; }; };
+  const sp = escala(L.map(i=>i.precio), true), sa = escala(L.map(i=>i.anio), false), sk = escala(L.map(i=>i.km), true), sd = escala(L.map(i=>i.ahorro_pct), false);
+  const w = {precio:[.55,.15,.15,.15], nuevo:[.2,.4,.25,.15], oferta:[.2,.15,.15,.5]}[f.prioridad] || [.3,.2,.2,.3];
+  L.forEach(i => i.puntaje = Math.round(100*(w[0]*sp(i.precio) + w[1]*sa(i.anio) + w[2]*sk(i.km) + w[3]*sd(i.ahorro_pct))));
+  return L.sort((a,b) => b.puntaje - a.puntaje);
+}
+
+/* ---------- resultados ---------- */
+let datos = [], orden = "puntaje";
+function pintar(){
+  if (!avisos.length) { $("#salida").innerHTML = ""; return; }
+  datos = rankear();
+  if (!datos.length) { $("#salida").innerHTML = `<div class="vacio"><strong>Ningún aviso cumple los filtros.</strong><br>Tienes ${avisos.length} avisos pegados; prueba ampliando año, precio o kilómetros, o revisa el texto de búsqueda.</div>`; return; }
+  $("#salida").innerHTML = `<div class="barra"><h2>${datos.length} avisos ordenados</h2><span>
+    <select id="orden" aria-label="Ordenar por"><option value="puntaje">Más conveniente</option><option value="precio">Precio menor</option><option value="anio">Año más nuevo</option><option value="km">Menos kilómetros</option></select>
+    <button id="csv" type="button">Descargar CSV</button></span></div><div class="lista" id="lista"></div>`;
+  $("#orden").value = orden;
+  $("#orden").addEventListener("change", e => { orden = e.target.value; lista(); });
+  $("#csv").addEventListener("click", csv);
+  lista();
+}
+function lista(){
+  const v = [...datos], val = (i,c) => i[c] ?? (c === "anio" ? -Infinity : Infinity);
+  if (orden === "puntaje") v.sort((a,b) => b.puntaje - a.puntaje);
+  else if (orden === "anio") v.sort((a,b) => val(b,"anio") - val(a,"anio"));
+  else v.sort((a,b) => val(a,orden) - val(b,orden));
+  $("#lista").innerHTML = v.map((i,n) => {
+    const ah = i.ahorro_pct == null ? "" : i.ahorro_pct >= 3 ? `<div class="ahorro bueno">${i.ahorro_pct}% bajo lo esperado</div>`
+      : i.ahorro_pct <= -3 ? `<div class="ahorro caro">${Math.abs(i.ahorro_pct)}% sobre lo esperado</div>` : `<div class="ahorro">Precio en línea con el mercado</div>`;
+    const tit = i.url ? `<a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.titulo)}</a>` : esc(i.titulo);
+    const img = /^https?:/.test(i.img) ? `background-image:url('${esc(i.img)}')` : "";
+    return `<article class="fila ${n < 3 && orden === "puntaje" ? "top" : ""}"><div class="pos">${n+1}</div><div class="foto" style="${img}"></div>
+      <div class="info"><h3>${tit}</h3><div class="meta"><span class="sitio">${NOMBRE[i.sitio]}</span><span>${i.anio ?? "año s/i"}</span>
+      <span>${i.km != null ? i.km.toLocaleString("es-CL")+" km" : "km s/i"}</span>${i.lugar ? `<span>${esc(i.lugar)}</span>` : ""}</div></div>
+      <div class="precio"><div class="monto">${clp(i.precio)}</div>${ah}<div class="medidor" aria-hidden="true"><i style="width:${i.puntaje}%"></i></div><div class="puntos">Conveniencia ${i.puntaje}/100</div></div></article>`;
+  }).join("");
+}
+function csv(){
+  const cols = ["puntaje","sitio","titulo","precio","anio","km","ahorro_pct","esperado","lugar","url"];
+  const filas = [cols.join(";")].concat(datos.map(i => cols.map(c => `"${String(i[c] ?? "").replace(/"/g,'""')}"`).join(";")));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["\ufeff"+filas.join("\n")], {type:"text/csv"}));
+  a.download = "autos_" + ($("#q").value.replace(/\W+/g,"_") || "busqueda") + ".csv"; a.click();
+}
+contadores();
+</script>
+</body>
+</html>
