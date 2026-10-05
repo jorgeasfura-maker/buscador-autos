@@ -1,0 +1,21 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+
+Unnamed repository; edit this file 'description' to name the repository.
+
+ref: refs/heads/master
+
+Add Buscador de Autos: extensión Chrome, app Android y landing
+
+- Extensión MV3 que busca en Chileautos, MercadoLibre y Yapo y rankea por conveniencia
+- Chileautos: búsqueda por ruta /vehiculos/{marca}/{modelo}/ y paginación con offset
+- Yapo: precios y km con coma
+- Versión Android con WebView (build sin Gradle vía android/build.ps1)
+- Landing estática con ZIP de la extensión en sitio/
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
